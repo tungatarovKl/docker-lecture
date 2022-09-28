@@ -1,0 +1,37 @@
+# Название workflow
+name: Docker Image CI 2
+
+# События которые триггерит запуск инструкций
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "master" ]
+
+# Задачи, которые выполняться на удаленной машине github
+jobs:
+  build: # Название job-ы
+    runs-on: ubuntu-latest # windows-latest, debian-latest
+    steps:
+        # 1-ый шаг
+      - name: Example step
+        run: echo "Hello Github Actions"
+
+        # 2-ой шаг
+      - uses: actions/checkout@v3
+
+        # 3-ий шаг
+      - name: Login to Dockerhub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+        # 4-ый шаг
+      - name: Build Docker
+        run: docker build . -t tungatarov/go-calculator:${{ github.ref_name }}
+
+        # 5-ый шаг
+      - name: Push to Docker hub
+        run: docker push tungatarov/go-calculator:${{ github.ref_name }}
+
